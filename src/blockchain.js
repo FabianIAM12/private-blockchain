@@ -74,9 +74,13 @@ class Blockchain {
             }
 
             block.hash = SHA256(JSON.stringify(block)).toString();
-            console.log(block);
             this.chain.push(block);
-            resolve(block);
+
+            const errorLog = await self.validateChain();
+            if (errorLog.length === 0) {
+                resolve(block);
+            }
+            reject();
         });
     }
 

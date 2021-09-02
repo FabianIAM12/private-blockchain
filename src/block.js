@@ -42,14 +42,15 @@ class Block {
             // Save in auxiliary variable the current block hash
             const auxiliary = self.hash;
             // Recalculate the hash of the Block
-            const reCalcHash = SHA256(self.body).toString();
+            self.hash = null;
+            self.hash = SHA256(self.body).toString();
 
             // Comparing if the hashes changed
-            // Returning the Block is valid
-            // Returning the Block is not valid
-            if (reCalcHash === auxiliary) {
+            if (self.hash === auxiliary) {
+                // Returning the Block is valid
                 resolve(true);
             }
+            // Returning the Block is not valid
             resolve(false);
         });
     }
