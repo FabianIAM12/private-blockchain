@@ -11,6 +11,7 @@
 
 const SHA256 = require('crypto-js/sha256');
 const hex2ascii = require('hex2ascii');
+const GENESIS = 'Genesis Block';
 
 class Block {
 
@@ -39,13 +40,17 @@ class Block {
         let self = this;
         return new Promise((resolve, reject) => {
             // Save in auxiliary variable the current block hash
-            self.auxiliary = self.hash;
+            const auxiliary = self.hash;
             // Recalculate the hash of the Block
-            self.hash = SHA256(this.body);
+            const reCalcHash = SHA256(self.body).toString();
+
             // Comparing if the hashes changed
             // Returning the Block is valid
             // Returning the Block is not valid
-            resolve(self.hash === self.auxiliary);
+            if (reCalcHash === auxiliary) {
+                resolve(true);
+            }
+            resolve(false);
         });
     }
 
@@ -59,15 +64,17 @@ class Block {
      *     or Reject with an error.
      */
     getBData() {
-        // Getting the encoded data saved in the Block
-        const decodedData = hex2ascii(this.body);
-        // Decoding the data to retrieve the JSON representation of the object
-        // Parse the data to an object to be retrieve.
-        // Resolve with the data if the object isn't the Genesis block
-        /* todo: check if genesis block? */
-        return JSON.parse(decodedData);
+            // Getting the encoded data saved in the Block
+            const decodedData = hex2ascii(this.body);
+            // Decoding the data to retrieve the JSON representation of the object
+            // Parse the data to an object to be retrieve.
+            const jsonObj = JSON.parse(decodedData);
+            // Resolve with the data if the object isn't the Genesis block
+            if (jsonObj.data !== GENESIS) {
+                return jsonObj
+            }
+            return null;
     }
-
 }
 
 module.exports.Block = Block;                    // Exposing the Block class as a module
